@@ -21,7 +21,7 @@ def countdown(n):
     print("done!")
 if __name__ == "__main__":
     with open(r"some.txt") as f:
-        for line,prevlines in search(f, "python", 6):
+        for line,prevlines in search(f, "python", 18):
             for pline in list(prevlines):
                 print(pline, end="")
             #print(line, end='X')
