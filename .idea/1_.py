@@ -3,7 +3,6 @@ from sys import stdout
 def out(Any):
     return stdout.write(Any)
 def search(lines, pattern,history=3):
-    #pattern
     previous_lines = deque(maxlen=history)
     for line in lines:
         if pattern in line:
@@ -22,10 +21,10 @@ def countdown(n):
     print("done!")
 if __name__ == "__main__":
     with open(r"some.txt") as f:
-        for line,prevlines in search(f, "python", 1):
-            for pline in prevlines:
+        for line,prevlines in search(f, "python", 6):
+            for pline in list(prevlines):
                 print(pline, end="")
-            print(line, end='')
+            #print(line, end='X')
             print("-" * 20)
     out("countdown()方法生成的类型是:")
     out(str(type(countdown(5))))

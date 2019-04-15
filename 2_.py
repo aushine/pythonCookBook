@@ -15,7 +15,15 @@ def test():
         if n != 1:
             yield n
         n += 1
-a = test()
+def search(list):
+    a = deque(maxlen=3)
+    for i in list:
+        yield i, a
+    a.append(i)
+a = search([1, 2, 3, 4, 5, 6])
+for i, j in a:
+    for each in j:
+        print(each)
 for i in range(5):
     print(i)
 
