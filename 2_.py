@@ -1,13 +1,25 @@
 from collections import deque
-def search(lines, pattern, history=5):
-    previous_lines = deque(maxlen=history)
-    for line in lines:
-        yield line, previous_lines
-    previous_lines.append(line)
-if __name__ == "__main__":
-    with open(r"some.txt", encoding="utf-8") as f:
-        for line, prevlines in search(f, "python", 3):
-            for pline in prevlines:
-                print(pline, end="")
-        print(line, end="")
-        print('-' * 20)
+def count(n):
+    b = 1
+    res = []
+    while n != 0:
+        yield n, b
+        n -= 1
+        b += 1
+        if True:
+            pass
+
+def test():
+    n = 0
+    while True:
+        if n != 1:
+            yield n
+        n += 1
+a = test()
+for i in range(5):
+    print(i)
+
+print(count(2))
+for i, j in count(5):
+    print(i, "===>", j)
+

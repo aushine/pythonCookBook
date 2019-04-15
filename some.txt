@@ -2,3 +2,6 @@
 主持collection.deque大显身手的时候,比如下面的
 python
 代码做简单的文本匹配
+ababc
+aaaaa
+badfsd
