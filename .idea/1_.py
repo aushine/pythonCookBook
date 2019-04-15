@@ -5,7 +5,7 @@ def out(Any):
 def search(lines, pattern,history=3):
     previous_lines = deque(maxlen=history)
     for line in lines:
-        if pattern in line:
+        if "python\n" == line:
             yield line,previous_lines
         previous_lines.append(line)
 def frange(start, stop, increment):
@@ -21,7 +21,7 @@ def countdown(n):
     print("done!")
 if __name__ == "__main__":
     with open(r"some.txt") as f:
-        for line,prevlines in search(f, "python", 18):
+        for line,prevlines in search(f, "python", 4):
             for pline in list(prevlines):
                 print(pline, end="")
             #print(line, end='X')
