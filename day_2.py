@@ -32,16 +32,24 @@ if __name__ == "__main__":
     a ={
         'x': 1,
         'y': 2,
-        'z': 3
+        'z': 3,
+        'c': 9
     }
     b ={
         'w': 10,
         'x': 11,
-        'y': 2
+        'y': 2,
+        'c': 9
     }
     print(a.keys() & b.keys())#输出了具有相等值的两个字典的键->{'x', 'y'}
     print(a.keys() - b.keys())#输出了在a中有但是在b中没有的键->{'z'}
+    tes = a.items() & b.items()#把两个字典所共有的键值对放入一个元组中添加进set中
+    print(type(tes))#set类型
+    print(tes)
+    #->{('c', 9), ('y', 2)}
 
+    c = {key: a[key] for key in a.keys()-{'z', 'w'}}#过滤了a字典中键为'z','w'的两个数据
+    print(f"c is {c}")#->{'c': 9, 'y': 2, 'x': 1}
 
     #比对一个字典的值,对字典的值进行比对的同时将进行排序,
     prices = {
