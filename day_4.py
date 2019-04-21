@@ -1,8 +1,20 @@
 import heapq
 import time
 from collections import OrderedDict
+from operator import itemgetter
+
 
 def main():
+    rows = [
+        {'fname': 'Brian', 'lname': 'Jones', 'uid': 1003},
+        {'fname': 'David', 'lname': 'Beazley', 'uid': 1002},
+        {'fname': 'John', 'lname': 'Cleese', 'uid': 1001},
+        {'fname': 'Big', 'lname': 'Jones', 'uid': 1004}
+    ]
+    rows_by_fname = sorted(rows, key=itemgetter("fname"))
+    rows_by_uid = sorted(rows, key=itemgetter("uid"))
+    print(rows_by_fname)
+    print(rows_by_uid)
     dict1 = {"a": 1, "b": 2, "c": 3}
     zip1 = zip(dict1.values(), dict1.keys())
     print(sorted(zip1))
