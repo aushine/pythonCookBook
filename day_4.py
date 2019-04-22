@@ -4,7 +4,18 @@ from collections import OrderedDict
 from operator import itemgetter
 
 
+def tes_():
+    for i in range(2, 100):
+        for j in range(2, i):
+            if i % j == 0:
+                break
+        else:
+            yield i
+
+
 def main():
+    a = list(tes_())
+    print(a)
     rows = [
         {'fname': 'Brian', 'lname': 'Jones', 'uid': 1003},
         {'fname': 'David', 'lname': 'Beazley', 'uid': 1002},
