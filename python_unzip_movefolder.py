@@ -1,5 +1,6 @@
 import multiprocessing
 import os
+import random
 import shutil
 import zipfile
 from collections import defaultdict
@@ -117,9 +118,10 @@ def file_copy(file_folder, newfolder):
     file_name = file_folder.split("/")[-1]
     newfolder = newfolder + "/" + file_name
     # print(newfolder)
+    # 开启新文件夹,并写入内容
     new_f = open(newfolder, "wb")
     new_f.write(content)
-    # 开启新文件夹,并写入内容
+
 
     # new_f = open(file_folder, "wb")
 
