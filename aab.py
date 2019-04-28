@@ -8,7 +8,7 @@ monkey.patch_all()
 
 
 def img_downloader(url, file_name):
-    print("url>>>", url, "file_name>>>", file_name)
+    # print("url>>>", url, "file_name>>>", file_name)
     content = urllib.request.urlopen(url)
     img_content = content.read()
     with open("C:/Users/16152/Desktop/material/图片下载测试/" + file_name + ".jpg", "wb") as i:
