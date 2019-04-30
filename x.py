@@ -1,4 +1,20 @@
 import urllib.request
+import sys
+import re
+from importlib import reload
 
-content = urllib.request.urlopen("https://www.bilibili.com/f057288a-194d-4b22-bba1-98344731de8f")
-print(content)
+reload(sys)
+
+
+def out(any):
+    return sys.stdout.write(any)
+
+
+def main():
+    url_text = urllib.request.urlopen("https://search.bilibili.com/photo?keyword=%E5%85%AB%E9%87%8D%E6%A8%B1")
+    url_content = url_text.read()
+    print(url_content)
+
+
+if __name__ == "__main__":
+    main()
