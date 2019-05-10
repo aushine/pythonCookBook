@@ -1,21 +1,23 @@
-import urllib.request
-import sys
-import re
-from importlib import reload
+import itertools
+"""
+def a():
+    x = 1
+    while True:
+        yield x
+        print("aaaaa")
+        x += 1
+print(type(a()))
+def b():
+    for i in range(10):
+        yield i
+it = b()"""
+li = [1, 2, 3]
 
-reload(sys)
+
+def yield_test():
+    pass
 
 
-def out(any):
-    return sys.stdout.write(any)
-
-
-def main():
-    url_text = urllib.request.urlopen("https://search.bilibili.com/photo?keyword=%E5%85%AB%E9%87%8D%E6%A8%B1")
-    url_content = url_text.read()
-
-
-if __name__ == "__main__":
-    main()
-    def a():
-        pass
+def permutation(li):
+    print(list(itertools.permutations(li)))
+permutation(li)
