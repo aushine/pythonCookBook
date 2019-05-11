@@ -1,3 +1,5 @@
+import time
+
 from pymysql import *
 from sys import stdout
 """
@@ -52,15 +54,48 @@ class GouDong:
         self.cursor.close()
 
     @staticmethod
+    def my_align(_string, _length, _type='L'):
+        """
+        --->此函数来自简书作者: @Roi_Rio<---
+        中英文混合字符串对齐函数
+        my_align(_string, _length[, _type]) -> str
+
+        :param _string:[str]需要对齐的字符串
+        :param _length:[int]对齐长度
+        :param _type:[str]对齐方式（'L'：默认，左对齐；'R'：右对齐；'C'或其他：居中对齐）
+        :return:[str]输出_string的对齐结果
+        """
+        _str_len = len(_string)  # 原始字符串长度（汉字算1个长度）
+        for _char in _string:  # 判断字符串内汉字的数量，有一个汉字增加一个长度
+            if u'\u4e00' <= _char <= u'\u9fa5':  # 判断一个字是否为汉字（这句网上也有说是“ <= u'\u9ffff' ”的）
+                _str_len += 1
+        _space = _length-_str_len  # 计算需要填充的空格数
+        if _type == 'L':  # 根据对齐方式分配空格
+            _left = 0
+            _right = _space
+        elif _type == 'R':
+            _left = _space
+            _right = 0
+        else:
+            _left = _space//2
+            _right = _space-_left
+        return ' '*_left + _string + ' '*_right
+
+    @staticmethod
     def guidance(inital):
         """开启操作引导"""
         if inital == "start":
-            print("-" * 26)
-            op = input("|请输入您想进行的操作:   |\n|登陆(L)   注册(R)       |\n|退出(Q)   下单(需登录(B)|\n|浏览(V)   注销(LOGOUT)  |\n|请输入:")
+            out("=" * 25)
+            op = input("\n|请输入您想进行的操作:   |\n|登陆(L)   注册(R)       |\n|退出(Q)   下单(需登录(B)|\n|浏览(V)   注销(LOGOUT)  |\n|请输入:")
             return op.upper()
         elif inital == "personal":
-            print("-"*26)
+            out("=" * 25)
             op = input("|修改密码(C)    修改/完善个人信息(P)|")
+        elif inital =="query_filtter":
+            out("=" * 25)
+            op = input("\n|只看品牌(1)  只看类型(2)|\n|查看所有(3):            |\n请输入:")
+
+            return op
 
     def query(self, user_name):
         """查询方法
@@ -89,6 +124,7 @@ class GouDong:
             yield False
 
         # 本用户的id在订单表中能匹配到至少有一个的订单就表示存在有订单
+        # sql = "select g.name as 型号,b.name as 品牌,c.name as 类型,g.is_saleoff as 是否售空 from goods as g inner join brand as b inner join cate_name as c"
 
     def update(self, op, *info):
         """更新方法
@@ -140,7 +176,6 @@ class GouDong:
         else:
             out("已登录一个账号,请注销后再尝试登录\n")
 
-
     def regist(self):
         """注册的方法
         1. 输入用户名和密码进行注册,密码输入完后需要再确认密码(再输入一次)一致再操作数据库
@@ -166,9 +201,58 @@ class GouDong:
         if op == "N":
             pass
 
+    def query_goods(self, filtter):
+        if filtter == "1":
+            # 只看类型的查询
+            pass
+        if filtter == "2":
+            # 只看品牌的查询
+            pass
+        if filtter == "3":
+            # 查看所有商品的查询
+            start = 0
+            while True:
+                limit = f"limit {start}, 5"
+                sql = """select g.name as 型号,b.name as 品牌,c.name as 类型 
+                         from (goods as g inner join brand as b on g.brand_id = b.id) inner join cate_name as c 
+                         on c.id = g.cate_id %s; """
+                sql = sql %limit
+                try:
+                    self.cursor.execute(sql)
+                except Exception as ret:
+                    print("异常抛出---->", ret)
+                query_content = self.cursor.fetchall()
+                for i in query_content:
+                    print(f"|型号:{self.my_align(i[0], 34)}|品牌:{i[1]}   |类型:{i[2]}    选中({query_content.index(i)+1})")
+                if (len(query_content)-start) < -5:
+                    op = input("|上一页(<)\n请输入:")
+                if start == 0:
+                    op = input("|下一页(>)\n请输入:")
+                elif start >= 5:
+                    op = input("|上一页(<)     下一页(>)\n请输入:")
+
+                if op == "<" and start >= 5:
+                    start -= 5
+                if op == ">" and start < 21:
+                    start += 5
+                if op.upper() =="Q":
+                    break
+                print("*"*50)
+
+
+
     def place_order(self):
         # 下单的方法
-        pass
+        ## 判断是否有效登录
+        """登录完成后
+        1. 客户端可以选择品种和品牌过滤商品
+        2. 客户端可以选择价格高到低或者低到高排序
+        """
+        if self.is_loging:
+            filtter = self.guidance("query_filtter")
+            self.query_goods(filtter)
+        else:
+            out("当前未登录,请登陆后再尝试")
 
 
 def main():

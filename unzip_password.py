@@ -12,4 +12,10 @@ import zipfile
 2.先一个一个遍历穷举
 3.累加个数来遍历,两个两个
 """
+import tkinter as tk
 
+a = '一二三'
+b = '一二三四abcde'
+c = '一二三四五abcdefgh'
+
+print('{}|\n{}|\n{}|'.format(my_align(a, 20), my_align(b, 20), my_align(c, 20)))
