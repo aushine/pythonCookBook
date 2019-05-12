@@ -146,6 +146,32 @@ class GouDong:
             sql = "update user set tel = %s, addr = %s where name = %s"
             self.cursor.execute(sql, info)
             self.conn.commit()
+        elif op == "update_orders":
+            # 1.先往orders插入当前时间和已登录的user_id
+            # 2. 把orders列表中保存的goods_id 插入到
+            # 将当前用户的id保存到变量中
+            sql = f"select id from user where name = '{self.user_name}'"
+            local_user_id = self.execute(sql, "query")[0][0]
+
+            #获取当前时间
+            local_time = time.strftime("%Y.%m.%d %H:%M:%S", time.localtime(time.time()))
+
+            sql = f"insert into orders(order_date_time, user_id) values('{local_time}', {local_user_id})"
+            # 往orders表中插入当前时间和使用登录用户查询到的用户id
+            self.execute(sql, "update")
+
+            # 往orders_info表中插入上方表插入order_id所有下单的商品id和数量
+            # 把用户id商品id和数量插入到orders
+
+            # 如何获取到准确的当前创建的订单id
+            # 根据上方存储的时间和用户id查询的订单id的sql语句
+            sql = f"select id from orders where user_id = '{local_user_id}' and order_date_time = '{local_time}';"
+            order_id = self.execute(sql, "query")[0][0]
+            # 每次调用更新订单的函数都会刷新时间
+            # 就可以保证订单详情表不会重复插入相同的订单
+            for k, v in info[0].items():
+                sql = f"""insert into orders_info(order_id, goods_id, quantity) values({order_id}, {k}, {v})"""
+                self.execute(sql, "update")
 
     def login(self):
         """登陆的方法"""
@@ -210,18 +236,16 @@ class GouDong:
             pass
         if filtter == "3":
             # 查看所有商品的查询
-            start = 0
-            while True:
-                limit = f"limit {start}, 5"
-                sql = """select g.name as 型号,b.name as 品牌,c.name as 类型 
-                         from (goods as g inner join brand as b on g.brand_id = b.id) inner join cate_name as c 
-                         on c.id = g.cate_id %s; """
-                sql = sql %limit
-                try:
-                    self.cursor.execute(sql)
-                except Exception as ret:
-                    print("异常抛出---->", ret)
-                query_content = self.cursor.fetchall()
+            self.start = 0
+            limit = f"limit {self.start}, 5"
+            sql = """select g.name as 型号,b.name as 品牌,c.name as 类型, g.price, g.id, g.checked 
+                    from (goods as g inner join brand as b on g.brand_id = b.id) inner join cate_name as c 
+                    on c.id = g.cate_id %s; """
+            # sql = sql %limit
+
+            self.limitAndpaging(sql)
+            #如何将分页和翻页的功能实现覆用
+            """
                 for i in query_content:
                     print(f"|型号:{self.my_align(i[0], 34)}|品牌:{i[1]}   |类型:{i[2]}    选中({query_content.index(i)+1})")
                 if (len(query_content)-start) < -5:
@@ -237,22 +261,83 @@ class GouDong:
                     start += 5
                 if op.upper() =="Q":
                     break
-                print("*"*50)
+                print("*"*50)"""
 
+    def execute(self, sql, type_):
+        self.cursor.execute(sql)
+        if type_ == "query":
+            return self.cursor.fetchall()
+        if type_ == "update":
+            self.conn.commit()
 
+    def limitAndpaging(self, sql):
+        # 保存选中的商品id的列表
+        check_list = dict()
+        while True:
+            limit = f"limit {self.start}, 5"
+            query_content = self.execute(sql %limit, "query")
+            for i in query_content:
+                i_content = f"|型号:{self.my_align(i[0], 34)}|品牌:{i[1]}   |类型:{i[2]} |价格{i[3]}"
+                if i[-2] not in check_list:
+                    i_content += f"    勾选({query_content.index(i)+1})"
+                if i[-2] in check_list:
+                    i_content += f"    增加数量"
+                print(i_content)
+            if (len(query_content)-self.start) < - 5:
+                op = input("|上一页(<)     下单(E)\n请输入:")
+            if self.start == 0:
+                op = input("|下一页(>)     下单(E)\n请输入:")
+            elif self.start >= 5:
+                op = input("|上一页(<)     下单(E)     下一页(>)\n请输入:")
+            try:
+                if 5 > int(op) > 1:
+                    # print("++++++>Test<++++++")
+                    pass
+            except Exception as ret:
+                pass
+            else:
+                # 如果输入了数字就表示选中了某一个商品
+                # 就把选中的那个i值的id保存到
+                # 把op-1的值索引到query_content
+                goods_id = query_content[int(op)-1][-2]
+                if goods_id not in check_list.keys():
+                    check_list[goods_id] = 1
+                else:
+                    # print("========>数量增加<=========")
+                    check_list[goods_id] += 1
+            if op == "<" and self.start >= 5:
+                self.start -= 5
+            if op == ">" and self.start < 21:
+                self.start += 5
+            if op.upper() == "Q":
+                break
+            # print(check_list)
+            if op.upper() == "E":
+                # 如果选中了下单,就可以把已选中的商品id送去写入到订单表和订单详情表中
+                self.place_order(check_list)
+                break
 
-    def place_order(self):
+            print("*"*100)
+
+    def place_order(self, orders=None):
         # 下单的方法
-        ## 判断是否有效登录
+        # 判断是否有效登录
         """登录完成后
         1. 客户端可以选择品种和品牌过滤商品
         2. 客户端可以选择价格高到低或者低到高排序
         """
-        if self.is_loging:
-            filtter = self.guidance("query_filtter")
-            self.query_goods(filtter)
+        if orders:
+            # 如果接收到订单
+            # for k, v in orders.items():
+                # print(f"商品id:{k} 数量:{v}")
+            self.update("update_orders", orders)
         else:
-            out("当前未登录,请登陆后再尝试")
+            # 还没接收到订单
+            if self.is_loging:
+                filtter = self.guidance("query_filtter")
+                self.query_goods(filtter)
+            else:
+                out("当前未登录,请登陆后再尝试")
 
 
 def main():
