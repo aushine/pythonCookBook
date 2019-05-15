@@ -42,6 +42,7 @@ def main():
             out("权限验证2\n")
             func(a)
         return call_func
+    out("==========================\n")
 
     @ set_func
     def test3(num):
