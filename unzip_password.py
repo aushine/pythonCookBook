@@ -18,4 +18,3 @@ a = '一二三'
 b = '一二三四abcde'
 c = '一二三四五abcdefgh'
 
-print('{}|\n{}|\n{}|'.format(my_align(a, 20), my_align(b, 20), my_align(c, 20)))
