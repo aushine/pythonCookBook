@@ -28,11 +28,13 @@ def main():
 
     out("==========================\n")
 
-    @ set_func
+    @ set_func  # 等价于test2 = set_func(test2)
     def test2():
         out("这是test2\n")
 
     test2()
+
+    # 对有参数无返回值的函数进行装饰
 
 
 if __name__ == "__main__":
