@@ -23,7 +23,7 @@ HTTP/1.1 200 OK
 content
 """
 
-
+# a
 def service_client(client_socket):
         # 组装http应答的headers
         response = b"HTTP/1.1 200 OK \r\n"
