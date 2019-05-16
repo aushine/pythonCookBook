@@ -244,7 +244,7 @@ class GouDong:
             # sql = sql %limit
 
             self.limitAndpaging(sql)
-            #如何将分页和翻页的功能实现覆用
+            # 如何将分页和翻页的功能实现覆用
             """
                 for i in query_content:
                     print(f"|型号:{self.my_align(i[0], 34)}|品牌:{i[1]}   |类型:{i[2]}    选中({query_content.index(i)+1})")
