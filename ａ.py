@@ -32,8 +32,17 @@ def service_client(client_socket):
         # 接收到客户端的发过来的数据
         request = client_socket.recv(1024)
         print(request)
-        # 打开客户端请求的文件打开并将其中的内容作为body, 和headers组装作为服务端的应答
-        index_content = open(r"E:\PYTHON学习内容\jqye\课件资料\基础班-就业班课件资料_1-4基础班  5-14就业班\05python和linux高级编程阶段\1-6课件\Python高级-全部（html版）\index.html", "rb")
+        file_request = re.search(r"[^/]+(/[^?* ]*)", str(request))
+        # file_request = re.search(r"GET ([/\w]*.*) HTTP.*", str(request))
+        # file_request = re.search(r"GET (/[^?* ]*)", str(request))
+        if file_request:
+            print(file_request.group(1))
+        # 打开客户端请求的文件打开并将中的内容file_request = re.search(r"[^/]+(/[^?* ]*)", str(request))作为body, 和headers组装作为服务端的应答
+        # file_path = "html/"
+        file_name = file_request.group(1)
+        if file_name == "/":
+            file_name = "/index.html"
+        index_content = open(r"html" + file_name, "rb")
         response += index_content.read()
         client_socket.send(response)
         # 逻辑通路证明可行,
