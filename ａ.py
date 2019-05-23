@@ -70,6 +70,11 @@ def main():
         service_client(client_socket)
 
     server_socket.close()
-    
+
+
+    def no_content():
+        pass
+
+
 if __name__ == "__main__":
     main()
