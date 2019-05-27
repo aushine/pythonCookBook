@@ -71,7 +71,7 @@ def main():
 
     server_socket.close()
 
-
+    @staticmethod
     def no_content():
         pass
 
